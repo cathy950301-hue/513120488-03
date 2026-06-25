@@ -1,0 +1,355 @@
+/* --- 核心設定：亞麻米白 #F2EBE2 與 石墨黑 #2B2B2B --- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+    font-size: 16px;
+}
+
+body {
+    background-color: #F2EBE2; /* 企劃書指定：米白色基調，模擬紙張觸感 */
+    color: #2B2B2B; /* 企劃書指定：柔和石墨黑，具備墨水滲入的人文氣息 */
+    font-family: 'Inter', 'Noto Sans TC', 'Noto Serif TC', serif;
+    font-weight: 300;
+    line-height: 2;
+    letter-spacing: 0.12em;
+    overflow: hidden;
+    position: relative;
+}
+
+/* 仿紙張紋理（和紙細緻雜訊） */
+body::before {
+    content: "";
+    position: fixed;
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    opacity: 0.02;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 9999;
+}
+
+/* 自訂滑鼠指標 */
+.custom-cursor {
+    width: 20px;
+    height: 20px;
+    border: 1px solid rgba(43, 43, 43, 0.25);
+    border-radius: 50%;
+    position: fixed;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    z-index: 10000;
+    transition: width 0.3s cubic-bezier(0.25, 1, 0.5, 1), height 0.3s cubic-bezier(0.25, 1, 0.5, 1), background-color 0.3s;
+}
+.custom-cursor.active {
+    width: 60px;
+    height: 60px;
+    background-color: rgba(43, 43, 43, 0.03);
+    border-color: rgba(43, 43, 43, 0.1);
+}
+
+/* 隱藏式導航選單 (小圓點形式) */
+.minimal-nav {
+    position: fixed;
+    top: 40px;
+    right: 40px;
+    z-index: 999;
+}
+.nav-toggle {
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.3s;
+}
+.nav-toggle .dot {
+    width: 6px;
+    height: 6px;
+    background-color: #2B2B2B;
+    border-radius: 50%;
+    transition: all 0.4s ease;
+}
+/* 當選單被點擊激活時，小圓點輕輕彈跳放大 */
+.nav-toggle.open .dot {
+    transform: scale(2);
+    background-color: transparent;
+    border: 1px solid #2B2B2B;
+}
+.nav-menu {
+    position: absolute;
+    top: 40px;
+    right: 0;
+    background-color: rgba(242, 235, 242, 0.95);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-10px);
+    transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+    border: 1px solid rgba(43, 43, 43, 0.05);
+}
+.nav-menu.open {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+}
+.nav-link {
+    color: #2B2B2B;
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: opacity 0.3s;
+}
+.nav-link:hover { opacity: 0.5; }
+
+/* Apple式 全螢幕對齊容器 */
+.scroll-container {
+    scroll-snap-type: y mandatory;
+    height: 100vh;
+    overflow-y: scroll;
+}
+section {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8vw;
+    position: relative;
+    scroll-snap-align: start;
+}
+
+/* --- P1. 首頁與滑鼠感應背景 --- */
+.intro-section {
+    flex-direction: column;
+    text-align: center;
+}
+.scrolling-bg-layer {
+    position: absolute;
+    top: -5%; left: -5%; width: 110%; height: 110%;
+    background-color: transparent;
+    z-index: -1;
+    transition: transform 0.2s ease-out; /* 供滑鼠產生輕微位移 */
+}
+.title {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 3rem;
+    font-weight: 300;
+    margin-bottom: 2rem;
+    color: #2B2B2B;
+}
+.subtitle {
+    font-size: 1.1rem;
+    color: #666666;
+}
+.scroll-hint {
+    position: absolute;
+    bottom: 5vh;
+    font-size: 0.8rem;
+    color: #999999;
+    animation: breathe 3s infinite ease-in-out;
+}
+
+/* --- P2. 作品橫向滑動列（自由橫滾一行，20px間格） --- */
+.works-section {
+    justify-content: flex-start;
+    padding: 6vw 0;
+    overflow: hidden;
+}
+.works-gallery {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+.gallery-info {
+    max-width: 600px;
+    margin-bottom: 2.5rem;
+    padding-left: 8vw;
+}
+.work-title {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 1.8rem;
+    font-weight: 400;
+    margin-bottom: 1rem;
+}
+.gallery-stream {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap; /* 確保在同一行 */
+    gap: 20px; /* 精準 20 像素間格 */
+    width: 100vw;
+    padding-left: 8vw;
+    padding-right: 20vw;
+    padding-bottom: 60px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+}
+.gallery-stream::-webkit-scrollbar { display: none; }
+
+.work-item {
+    flex: 0 0 auto;
+    width: 440px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+.work-img-box {
+    width: 100%;
+    height: 480px;
+    overflow: hidden;
+    background-color: rgba(43, 43, 43, 0.03);
+    cursor: pointer;
+}
+.work-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: grayscale(25%);
+    transition: filter 0.6s ease, transform 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+}
+/* 微互動：Hover時色調輕輕甦醒 */
+.work-item:hover .work-img {
+    filter: grayscale(0%);
+    transform: scale(1.02);
+}
+.work-item span {
+    margin-top: 10px;
+    font-size: 0.8rem;
+    color: #999999;
+}
+
+/* 心情側筆：隱藏浮現對話框（時間差顯現） */
+.mood-note {
+    margin-top: 15px;
+    max-width: 90%;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+}
+/* 當滑鼠移入作品時，心情側筆才優雅地浮現出來 */
+.work-item:hover .mood-note {
+    opacity: 1;
+    transform: translateY(0);
+    transition-delay: 0.2s; /* 視覺時間差，先看圖再看字 */
+}
+.mood-text {
+    font-size: 0.85rem;
+    color: #555555;
+    line-height: 1.6;
+    font-style: italic;
+}
+
+/* --- P3~P6. 關於我四大分頁樣式 --- */
+.about-content {
+    max-width: 600px;
+    width: 100%;
+    text-align: left;
+}
+.about-label {
+    font-size: 0.8rem;
+    color: #999999;
+    margin-bottom: 1rem;
+}
+.about-title {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 1.8rem;
+    font-weight: 400;
+    margin-bottom: 1.5rem;
+}
+.about-text {
+    font-size: 0.95rem;
+    color: #333333;
+}
+.contact-box {
+    margin-top: 3rem;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+.contact-link {
+    color: #2B2B2B;
+    text-decoration: none;
+    border-bottom: 1px solid #2B2B2B;
+    padding-bottom: 4px;
+    font-size: 0.9rem;
+    align-self: flex-start;
+}
+
+/* 簡單小留言板 */
+.simple-message-board {
+    display: flex;
+    gap: 10px;
+    max-width: 400px;
+    margin-top: 10px;
+}
+.board-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid rgba(43, 43, 43, 0.3);
+    padding: 5px 0;
+    color: #2B2B2B;
+    font-family: inherit;
+    font-size: 0.9rem;
+}
+.board-input:focus {
+    outline: none;
+    border-bottom-color: #2B2B2B;
+}
+.board-btn {
+    background: transparent;
+    border: 1px solid #2B2B2B;
+    padding: 5px 15px;
+    color: #2B2B2B;
+    cursor: pointer;
+    font-size: 0.8rem;
+}
+
+/* 未完待續宣告區 */
+.unfinished-declaration {
+    margin-top: 4rem;
+    font-size: 0.8rem;
+    color: #999999;
+    font-style: italic;
+}
+
+/* --- 隱形物理回彈觸感 (Mechanical Feedback) --- */
+.mechanical-btn {
+    transition: transform 0.1s cubic-bezier(0.25, 1, 0.5, 1);
+}
+.mechanical-btn:active {
+    transform: scale(0.95) translateY(2px); /* 點擊時輕微縮小、下移，模擬實體回彈 */
+}
+
+/* --- 慢瀏覽：捲動淡入與非同步位移效果 --- */
+.animate-ready {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 1.2s cubic-bezier(0.25, 1, 0.5, 1), transform 1.2s cubic-bezier(0.25, 1, 0.5, 1);
+}
+.animate-ready.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+@keyframes breathe {
+    0%, 100% { opacity: 0.3; transform: translateY(0); }
+    50% { opacity: 0.8; transform: translateY(5px); }
+}
+
+/* 響應式手機優化 */
+@media (max-width: 768px) {
+    html { font-size: 14px; }
+    .gallery-info { padding-left: 6vw; }
+    .gallery-stream { padding-left: 6vw; }
+    .work-item { width: 280px; }
+    .work-img-box { height: 340px; }
+    .custom-cursor { display: none; }
+    .minimal-nav { top: 20px; right: 20px; }
+}
